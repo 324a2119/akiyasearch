@@ -1,101 +1,104 @@
-import streamlit as st
-import pandas as pd
-
-# ダミーデータに「使用目的」「設備条件」を追加
-houses = pd.DataFrame([
-    {
-        "物件ID": 1,
-        "地域": "富山県富山市",
-        "価格": 500,
-        "間取り": "3LDK",
-        "築年数": 30,
-        "詳細": "駅から徒歩10分の広々とした物件",
-        "使用目的": "居住用",
-        "設備条件": ["駐車場あり", "庭付き"],
-        "画像URL": "/content/drive/MyDrive/Colab Notebooks/Gemini_Generated_Image_d8vfnfd8vfnfd8vf.jpg"
-    },
-    {
-        "物件ID": 2,
-        "地域": "石川県金沢市",
-        "価格": 300,
-        "間取り": "2DK",
-        "築年数": 40,
-        "詳細": "静かな住宅街にある中古物件",
-        "使用目的": "別荘",
-        "設備条件": ["オール電化"],
-        "画像URL": "/content/drive/MyDrive/Colab Notebooks/DSC_0412.JPG"
-    },
-    {
-        "物件ID": 3,
-        "地域": "富山県高岡市",
-        "価格": 200,
-        "間取り": "4LDK",
-        "築年数": 50,
-        "詳細": "リフォーム済み。大家族向け",
-        "使用目的": "店舗",
-        "設備条件": ["駐車場あり"],
-        "画像URL": "/content/drive/MyDrive/Colab Notebooks/DSC_0399.JPG"
-    },
-])
-
-# ページ設定
-st.set_page_config(page_title="空き家さーち", layout="wide")
-
-# カスタムスタイル（白背景・黒文字・青見出し）
-st.markdown("""
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>空き家さーち</title>
     <style>
-        body, .stApp {
+        body {
+            font-family: 'Segoe UI', sans-serif;
             background-color: white;
             color: black;
+            margin: 20px;
         }
-        h1, h2, h3 {
+        h1, h2 {
             color: #0A4DA2;
         }
-        .stButton>button {
+        .filter {
+            background: #f0f0f0;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+        }
+        .property {
+            border: 1px solid #ccc;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .property img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+        .btn {
             background-color: #0A4DA2;
             color: white;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
         }
-        .stButton>button:hover {
+        .btn:hover {
             background-color: #083B80;
         }
-        .streamlit-expanderHeader {
-            color: #0A4DA2;
-        }
     </style>
-""", unsafe_allow_html=True)
+</head>
+<body>
 
-# タイトル
-st.title("🏠 空き家さーち")
+<h1>🏠 空き家さーち</h1>
 
-# 🔍 サイドバーのフィルター条件
-with st.sidebar:
-    st.header("🔍 絞り込み検索")
-    selected_area = st.selectbox("地域", ["すべて"] + sorted(houses["地域"].unique()))
-    max_price = st.slider("予算（万円）", min_value=100, max_value=1000, value=600)
-    selected_layout = st.selectbox("間取り", ["すべて"] + sorted(houses["間取り"].unique()))
-    selected_usage = st.selectbox("使用目的", ["すべて"] + sorted(houses["使用目的"].unique()))
-    selected_features = st.multiselect("設備条件（複数選択可）", ["駐車場あり", "庭付き", "オール電化"])
+<div class="filter">
+    <h2>🔍 絞り込み検索</h2>
+    <label>地域:
+        <select id="areaFilter">
+            <option>すべて</option>
+            <option>富山県富山市</option>
+            <option>石川県金沢市</option>
+            <option>富山県高岡市</option>
+        </select>
+    </label><br><br>
+    <label>最大価格（万円）:
+        <input type="range" id="priceFilter" min="100" max="1000" value="600">
+        <span id="priceValue">600</span>
+    </label><br><br>
+</div>
 
-# 🔎 フィルター処理
-filtered = houses.copy()
-if selected_area != "すべて":
-    filtered = filtered[filtered["地域"] == selected_area]
-if selected_layout != "すべて":
-    filtered = filtered[filtered["間取り"] == selected_layout]
-if selected_usage != "すべて":
-    filtered = filtered[filtered["使用目的"] == selected_usage]
-filtered = filtered[filtered["価格"] <= max_price]
-if selected_features:
-    filtered = filtered[filtered["設備条件"].apply(lambda x: all(f in x for f in selected_features))]
+<div id="resultCount">🔎 3 件の物件が見つかりました</div>
 
-# 結果表示
-st.subheader(f"🔎 {len(filtered)} 件の物件が見つかりました")
+<div id="results">
+    <!-- 物件カードはJSで動的に挿入 -->
+</div>
 
-for _, row in filtered.iterrows():
-    with st.expander(f"{row['地域']} | {row['間取り']} | {row['価格']}万円"):
-        st.image(row["画像URL"], caption="物件の外観", use_container_width=True)
-        st.write(f"🏠 築年数：{row['築年数']}年")
-        st.write(f"📋 詳細：{row['詳細']}")
-        st.write(f"🎯 使用目的：{row['使用目的']}")
-        st.write(f"🔧 設備条件：{', '.join(row['設備条件'])}")
-        st.button("📩 お問い合わせ", key=f"contact_{row['物件ID']}")
+<script>
+    const houses = [
+        {
+            id: 1,
+            area: "富山県富山市",
+            price: 500,
+            layout: "3LDK",
+            age: 30,
+            detail: "駅から徒歩10分の広々とした物件",
+            usage: "居住用",
+            features: ["駐車場あり", "庭付き"],
+            image: "/content/drive/MyDrive/Colab Notebooks/Gemini_Generated_Image_d8vfnfd8vfnfd8vf.jpg"
+        },
+        {
+            id: 2,
+            area: "石川県金沢市",
+            price: 300,
+            layout: "2DK",
+            age: 40,
+            detail: "静かな住宅街にある中古物件",
+            usage: "別荘",
+            features: ["オール電化"],
+            image: "/content/drive/MyDrive/Colab Notebooks/DSC_0412.JPG"
+        },
+        {
+            id: 3,
+            area: "富山県高岡市",
+            price: 200,
+            layout: "4LDK",
+            age: 50,
+            detail: "リフォーム済み。大家族向け",
+            usage: "店舗",
+            features: ["駐車場あり"],
