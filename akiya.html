@@ -1,0 +1,101 @@
+import streamlit as st
+import pandas as pd
+
+# ダミーデータに「使用目的」「設備条件」を追加
+houses = pd.DataFrame([
+    {
+        "物件ID": 1,
+        "地域": "富山県富山市",
+        "価格": 500,
+        "間取り": "3LDK",
+        "築年数": 30,
+        "詳細": "駅から徒歩10分の広々とした物件",
+        "使用目的": "居住用",
+        "設備条件": ["駐車場あり", "庭付き"],
+        "画像URL": "/content/drive/MyDrive/Colab Notebooks/Gemini_Generated_Image_d8vfnfd8vfnfd8vf.jpg"
+    },
+    {
+        "物件ID": 2,
+        "地域": "石川県金沢市",
+        "価格": 300,
+        "間取り": "2DK",
+        "築年数": 40,
+        "詳細": "静かな住宅街にある中古物件",
+        "使用目的": "別荘",
+        "設備条件": ["オール電化"],
+        "画像URL": "/content/drive/MyDrive/Colab Notebooks/DSC_0412.JPG"
+    },
+    {
+        "物件ID": 3,
+        "地域": "富山県高岡市",
+        "価格": 200,
+        "間取り": "4LDK",
+        "築年数": 50,
+        "詳細": "リフォーム済み。大家族向け",
+        "使用目的": "店舗",
+        "設備条件": ["駐車場あり"],
+        "画像URL": "/content/drive/MyDrive/Colab Notebooks/DSC_0399.JPG"
+    },
+])
+
+# ページ設定
+st.set_page_config(page_title="空き家さーち", layout="wide")
+
+# カスタムスタイル（白背景・黒文字・青見出し）
+st.markdown("""
+    <style>
+        body, .stApp {
+            background-color: white;
+            color: black;
+        }
+        h1, h2, h3 {
+            color: #0A4DA2;
+        }
+        .stButton>button {
+            background-color: #0A4DA2;
+            color: white;
+        }
+        .stButton>button:hover {
+            background-color: #083B80;
+        }
+        .streamlit-expanderHeader {
+            color: #0A4DA2;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
+# タイトル
+st.title("🏠 空き家さーち")
+
+# 🔍 サイドバーのフィルター条件
+with st.sidebar:
+    st.header("🔍 絞り込み検索")
+    selected_area = st.selectbox("地域", ["すべて"] + sorted(houses["地域"].unique()))
+    max_price = st.slider("予算（万円）", min_value=100, max_value=1000, value=600)
+    selected_layout = st.selectbox("間取り", ["すべて"] + sorted(houses["間取り"].unique()))
+    selected_usage = st.selectbox("使用目的", ["すべて"] + sorted(houses["使用目的"].unique()))
+    selected_features = st.multiselect("設備条件（複数選択可）", ["駐車場あり", "庭付き", "オール電化"])
+
+# 🔎 フィルター処理
+filtered = houses.copy()
+if selected_area != "すべて":
+    filtered = filtered[filtered["地域"] == selected_area]
+if selected_layout != "すべて":
+    filtered = filtered[filtered["間取り"] == selected_layout]
+if selected_usage != "すべて":
+    filtered = filtered[filtered["使用目的"] == selected_usage]
+filtered = filtered[filtered["価格"] <= max_price]
+if selected_features:
+    filtered = filtered[filtered["設備条件"].apply(lambda x: all(f in x for f in selected_features))]
+
+# 結果表示
+st.subheader(f"🔎 {len(filtered)} 件の物件が見つかりました")
+
+for _, row in filtered.iterrows():
+    with st.expander(f"{row['地域']} | {row['間取り']} | {row['価格']}万円"):
+        st.image(row["画像URL"], caption="物件の外観", use_container_width=True)
+        st.write(f"🏠 築年数：{row['築年数']}年")
+        st.write(f"📋 詳細：{row['詳細']}")
+        st.write(f"🎯 使用目的：{row['使用目的']}")
+        st.write(f"🔧 設備条件：{', '.join(row['設備条件'])}")
+        st.button("📩 お問い合わせ", key=f"contact_{row['物件ID']}")
