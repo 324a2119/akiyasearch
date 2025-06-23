@@ -140,7 +140,7 @@
     </label>
   </div>
 
-  <div id="resultCount">🔎 3 件の物件が見つかりました</div>
+  <div id="resultCount">🔎 物件を検索中…</div>
   <div id="results"></div>
 
   <script>
@@ -198,7 +198,7 @@
     const priceValue = document.getElementById('priceValue');
 
     function getFavorites() {
-      return JSON.parse(localStorage.getItem("favorites")) || [];
+      return JSON.parse(localStorage.getItem("favorites") || "[]");
     }
 
     function setFavorites(favs) {
@@ -206,7 +206,7 @@
     }
 
     function toggleFavorite(id) {
-      let favs = getFavorites();
+      let favs = getFavorites().map(Number);
       if (favs.includes(id)) {
         favs = favs.filter(f => f !== id);
       } else {
@@ -219,7 +219,8 @@
     function renderProperties() {
       const selectedArea = areaFilter.value;
       const maxPrice = parseInt(priceFilter.value);
-      const favs = getFavorites();
+      const favs = getFavorites().map(Number);
+
       const filtered = houses.filter(h =>
         (selectedArea === "すべて" || h.area === selectedArea) &&
         h.price <= maxPrice
@@ -252,6 +253,8 @@
       renderProperties();
     });
 
+    // 初期表示
+    priceValue.textContent = priceFilter.value;
     renderProperties();
   </script>
 
