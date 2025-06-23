@@ -1,122 +1,10 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>空き家さーち</title>
   <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #fafafa;
-      color: #333;
-      margin: 20px auto;
-      max-width: 900px;
-      padding: 0 20px;
-      font-size: 18px;
-      line-height: 1.7;
-    }
-
-    h1 {
-      font-size: 36px;
-      color: #0A4DA2;
-      text-align: center;
-      margin-bottom: 30px;
-    }
-
-    h2 {
-      font-size: 24px;
-      color: #0A4DA2;
-      margin-bottom: 15px;
-    }
-
-    .filter {
-      background: #eef2f7;
-      padding: 20px;
-      margin-bottom: 30px;
-      border-radius: 10px;
-      box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
-    }
-
-    label {
-      display: block;
-      margin-bottom: 15px;
-      font-weight: bold;
-    }
-
-    select, input[type="range"] {
-      width: 100%;
-      margin-top: 5px;
-      font-size: 16px;
-    }
-
-    #priceValue {
-      font-weight: bold;
-      color: #0A4DA2;
-    }
-
-    #resultCount {
-      font-size: 20px;
-      font-weight: bold;
-      margin-bottom: 20px;
-      color: #333;
-    }
-
-    .property {
-      background: #fff;
-      border: 1px solid #ddd;
-      padding: 20px;
-      border-radius: 10px;
-      margin-bottom: 30px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    }
-
-    .property h2 {
-      font-size: 22px;
-      margin-bottom: 10px;
-      color: #0A4DA2;
-    }
-
-    .property img {
-      display: block;
-      margin: 10px auto 20px;
-      max-width: 90%;
-      height: auto;
-      border-radius: 8px;
-    }
-
-    .property p {
-      margin: 5px 0;
-      font-size: 16px;
-    }
-
-    .btn {
-      display: inline-block;
-      background-color: #0A4DA2;
-      color: white;
-      padding: 10px 16px;
-      border-radius: 5px;
-      text-decoration: none;
-      font-size: 16px;
-      margin-top: 10px;
-      transition: background-color 0.3s ease;
-    }
-
-    .btn:hover {
-      background-color: #083B80;
-    }
-
-    .favorite-btn {
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-size: 22px;
-      color: #999;
-      margin-left: 10px;
-      vertical-align: middle;
-    }
-
-    .favorite-btn.active {
-      color: red;
-    }
+    /* 省略（前回のスタイルと同じでOK） */
   </style>
 </head>
 <body>
@@ -135,7 +23,7 @@
     </label>
 
     <label>最大価格（万円）:
-      <input type="range" id="priceFilter" min="100" max="1000" value="600">
+      <input type="range" id="priceFilter" min="100" max="1000" value="600" />
       <span id="priceValue">600</span> 万円
     </label>
   </div>
@@ -150,3 +38,87 @@
       { id: 3, area: "富山県高岡市", price: 200, layout: "4LDK", age: 50, detail: "リフォーム済み。大家族向け", usage: "店舗", features: ["駐車場あり"], image: "空き家フォルダ/空き家2.jpg" },
       { id: 4, area: "富山県富山市", price: 250, layout: "2DK", age: 20, detail: "小学校が目の前にある中古物件", usage: "家", features: ["オール電化"], image: "空き家フォルダ/空き家４.jpg" }
     ];
+
+    const resultsDiv = document.getElementById('results');
+    const resultCount = document.getElementById('resultCount');
+    const areaFilter = document.getElementById('areaFilter');
+    const priceFilter = document.getElementById('priceFilter');
+    const priceValue = document.getElementById('priceValue');
+
+    function getFavorites() {
+      try {
+        return JSON.parse(localStorage.getItem("favorites")) || [];
+      } catch {
+        return [];
+      }
+    }
+
+    function setFavorites(favs) {
+      localStorage.setItem("favorites", JSON.stringify(favs));
+    }
+
+    function toggleFavorite(id) {
+      let favs = getFavorites();
+      id = Number(id);
+      if (favs.includes(id)) {
+        favs = favs.filter(f => f !== id);
+      } else {
+        favs.push(id);
+      }
+      setFavorites(favs);
+      renderProperties();
+    }
+
+    function renderProperties() {
+      const selectedArea = areaFilter.value;
+      const maxPrice = parseInt(priceFilter.value);
+      const favs = getFavorites();
+
+      const filtered = houses.filter(h =>
+        (selectedArea === "すべて" || h.area === selectedArea) &&
+        h.price <= maxPrice
+      );
+
+      resultCount.textContent = `🔎 ${filtered.length} 件の物件が見つかりました`;
+      resultsDiv.innerHTML = '';
+
+      filtered.forEach(h => {
+        const isFav = favs.includes(h.id);
+        const div = document.createElement('div');
+        div.className = "property";
+        div.innerHTML = `
+          <h2>${h.area}｜${h.layout}｜${h.price}万円
+            <button class="favorite-btn ${isFav ? 'active' : ''}" data-id="${h.id}">❤️</button>
+          </h2>
+          <img src="${h.image}" alt="物件画像">
+          <p>🏠 築年数：${h.age}年</p>
+          <p>📋 詳細：${h.detail}</p>
+          <p>🎯 使用目的：${h.usage}</p>
+          <p>🔧 設備条件：${h.features.join(", ")}</p>
+          <a href="detail.html?id=${h.id}" class="btn">📩 お問い合わせ</a>
+        `;
+        resultsDiv.appendChild(div);
+      });
+
+      // イベントはこうして毎回登録するのが確実
+      document.querySelectorAll(".favorite-btn").forEach(btn => {
+        btn.onclick = () => {
+          const id = Number(btn.getAttribute("data-id"));
+          toggleFavorite(id);
+        };
+      });
+    }
+
+    areaFilter.addEventListener('change', renderProperties);
+    priceFilter.addEventListener('input', () => {
+      priceValue.textContent = priceFilter.value;
+      renderProperties();
+    });
+
+    // 初期表示
+    priceValue.textContent = priceFilter.value;
+    renderProperties();
+  </script>
+
+</body>
+</html>
