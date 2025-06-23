@@ -153,18 +153,19 @@
         resultsDiv.innerHTML = '';
 
         filtered.forEach(h => {
-            resultsDiv.innerHTML += `
-                <div class="property">
-                    <h2>${h.area} | ${h.layout} | ${h.price}万円</h2>
-                    <img src="${h.image}" alt="物件画像">
-                    <p>🏠 築年数：${h.age}年</p>
-                    <p>📋 詳細：${h.detail}</p>
-                    <p>🎯 使用目的：${h.usage}</p>
-                    <p>🔧 設備条件：${h.features.join(", ")}</p>
-                    <button class="btn">📩 お問い合わせ</button>
-                </div>
-            `;
-        });
+    resultsDiv.innerHTML += `
+        <div class="property">
+            <h2>${h.area} | ${h.layout} | ${h.price}万円</h2>
+            <img src="${h.image}" alt="物件画像">
+            <p>🏠 築年数：${h.age}年</p>
+            <p>📋 詳細：${h.detail}</p>
+            <p>🎯 使用目的：${h.usage}</p>
+            <p>🔧 設備条件：${h.features.join(", ")}</p>
+            <a href="detail.html?id=${h.id}" class="btn">📩 お問い合わせ</a>
+        </div>
+    `;
+});
+
     }
 
     areaFilter.addEventListener('change', renderProperties);
