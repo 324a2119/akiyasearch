@@ -215,26 +215,28 @@
       resultCount.textContent = `🔎 ${filtered.length} 件の物件が見つかりました`;
       resultsDiv.innerHTML = '';
 
-      filtered.forEach(h => {
-        const isFav = favs.includes(h.id);
-        const favClass = isFav ? 'active' : '';
+       filtered.forEach(h => {
+    const isFav = favs.includes(h.id);
+    const favClass = isFav ? 'active' : '';  // ここでactiveクラス付ける
 
-        const propertyHTML = document.createElement("div");
-        propertyHTML.className = "property";
-        propertyHTML.innerHTML = `
-          <h2>${h.area}｜${h.layout}｜${h.price}万円
-            <button class="favorite-btn ${favClass}" data-id="${h.id}">❤️</button>
-          </h2>
-          <img src="${h.image}" alt="物件画像">
-          <p>🏠 築年数：${h.age}年</p>
-          <p>📋 詳細：${h.detail}</p>
-          <p>🎯 使用目的：${h.usage}</p>
-          <p>🔧 設備条件：${h.features.join(", ")}</p>
-          <a href="detail.html?id=${h.id}" class="btn">📩 お問い合わせ</a>
-        `;
+    resultsDiv.innerHTML += `
+      <div class="property">
+        <h2>${h.area}｜${h.layout}｜${h.price}万円
+          <button class="favorite-btn ${favClass}" data-id="${h.id}" aria-label="お気に入り登録ボタン">❤️</button>
+        </h2>
+        <!-- 以下省略 -->
+      </div>
+    `;
+  });
 
-        resultsDiv.appendChild(propertyHTML);
-      });
+  // イベントリスナー付与
+  document.querySelectorAll('.favorite-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = Number(btn.dataset.id);
+      toggleFavorite(id);
+    });
+  });
+}
 
       // ボタンイベント再登録
       document.querySelectorAll(".favorite-btn").forEach(btn => {
