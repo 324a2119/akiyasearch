@@ -105,43 +105,34 @@
     }
 
     .favorite-btn {
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-size: 22px;
-      color: #999;
-      margin-left: 10px;
-      vertical-align: middle;
-    }
-
-    .favorite-btn.active {
-      color: red;
-    }
-
-    .favorite-btn {
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 32px;           /* 大きめサイズ */
-  color: #bbb;               /* OFFはやわらかいグレー */
+  font-size: 32px;
+  color: #bbb;          /* ここをグレーに */
   margin-left: 10px;
   vertical-align: middle;
-  padding: 8px;              /* クリック範囲を広げる */
-  border-radius: 50%;        /* 丸くする */
+  padding: 8px;
+  border-radius: 50%;
   transition: color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
 }
 
 .favorite-btn:hover {
-  color: #ff6b81;            /* ホバーでピンク色に */
+  color: #ff6b81;
   box-shadow: 0 0 8px #ff6b81;
   transform: scale(1.1);
 }
 
 .favorite-btn.active {
-  color: #ff4757;            /* ONはしっかり赤 */
+  color: #ff6b81;  /* ピンクに */
   text-shadow: 0 0 5px #ff6b81;
   animation: bounce 0.3s ease;
 }
+
 
 /* クリック時の弾むアニメーション */
 @keyframes bounce {
