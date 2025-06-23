@@ -143,120 +143,94 @@
   <div id="resultCount">🔎 物件を検索中…</div>
   <div id="results"></div>
 
-  <script>
-    const houses = [
-      {
-        id: 1,
-        area: "富山県富山市",
-        price: 500,
-        layout: "3LDK",
-        age: 30,
-        detail: "駅から徒歩10分の広々とした物件",
-        usage: "居住用",
-        features: ["駐車場あり", "庭付き"],
-        image: "空き家１.jpg"
-      },
-      {
-        id: 2,
-        area: "石川県金沢市",
-        price: 300,
-        layout: "2DK",
-        age: 40,
-        detail: "静かな住宅街にある中古物件",
-        usage: "別荘",
-        features: ["オール電化"],
-        image: "空き家フォルダ/空き家2.jpg"
-      },
-      {
-        id: 3,
-        area: "富山県高岡市",
-        price: 200,
-        layout: "4LDK",
-        age: 50,
-        detail: "リフォーム済み。大家族向け",
-        usage: "店舗",
-        features: ["駐車場あり"],
-        image: "空き家フォルダ/空き家2.jpg"
-      },
-      {
-        id: 4,
-        area: "富山県富山市",
-        price: 250,
-        layout: "2DK",
-        age: 20,
-        detail: "小学校が目の前にある中古物件",
-        usage: "家",
-        features: ["オール電化"],
-        image: "空き家フォルダ/空き家４.jpg"
-      }
-    ];
+<script>
+  const houses = [
+    { id: 1, area: "富山県富山市", price: 500, layout: "3LDK", age: 30, detail: "駅から徒歩10分の広々とした物件", usage: "居住用", features: ["駐車場あり", "庭付き"], image: "空き家１.jpg" },
+    { id: 2, area: "石川県金沢市", price: 300, layout: "2DK", age: 40, detail: "静かな住宅街にある中古物件", usage: "別荘", features: ["オール電化"], image: "空き家フォルダ/空き家2.jpg" },
+    { id: 3, area: "富山県高岡市", price: 200, layout: "4LDK", age: 50, detail: "リフォーム済み。大家族向け", usage: "店舗", features: ["駐車場あり"], image: "空き家フォルダ/空き家2.jpg" },
+    { id: 4, area: "富山県富山市", price: 250, layout: "2DK", age: 20, detail: "小学校が目の前にある中古物件", usage: "家", features: ["オール電化"], image: "空き家フォルダ/空き家４.jpg" }
+  ];
 
-    const resultsDiv = document.getElementById('results');
-    const resultCount = document.getElementById('resultCount');
-    const areaFilter = document.getElementById('areaFilter');
-    const priceFilter = document.getElementById('priceFilter');
-    const priceValue = document.getElementById('priceValue');
+  const resultsDiv = document.getElementById('results');
+  const resultCount = document.getElementById('resultCount');
+  const areaFilter = document.getElementById('areaFilter');
+  const priceFilter = document.getElementById('priceFilter');
+  const priceValue = document.getElementById('priceValue');
 
-    function getFavorites() {
-      return JSON.parse(localStorage.getItem("favorites") || "[]");
+  function getFavorites() {
+    return JSON.parse(localStorage.getItem("favorites") || "[]");
+  }
+
+  function setFavorites(favs) {
+    localStorage.setItem("favorites", JSON.stringify(favs));
+  }
+
+  function toggleFavorite(id) {
+    let favs = getFavorites();
+    id = Number(id);
+    if (favs.includes(id)) {
+      favs = favs.filter(f => f !== id);
+    } else {
+      favs.push(id);
     }
+    setFavorites(favs);
+    renderProperties();
+  }
 
-    function setFavorites(favs) {
-      localStorage.setItem("favorites", JSON.stringify(favs));
-    }
+  function renderProperties() {
+    const selectedArea = areaFilter.value;
+    const maxPrice = parseInt(priceFilter.value);
+    const favs = getFavorites();
 
-    function toggleFavorite(id) {
-      let favs = getFavorites().map(Number);
-      if (favs.includes(id)) {
-        favs = favs.filter(f => f !== id);
-      } else {
-        favs.push(id);
-      }
-      setFavorites(favs);
-      renderProperties();
-    }
+    const filtered = houses.filter(h =>
+      (selectedArea === "すべて" || h.area === selectedArea) &&
+      h.price <= maxPrice
+    );
 
-    function renderProperties() {
-      const selectedArea = areaFilter.value;
-      const maxPrice = parseInt(priceFilter.value);
-      const favs = getFavorites().map(Number);
+    resultCount.textContent = `🔎 ${filtered.length} 件の物件が見つかりました`;
+    resultsDiv.innerHTML = '';
 
-      const filtered = houses.filter(h =>
-        (selectedArea === "すべて" || h.area === selectedArea) &&
-        h.price <= maxPrice
-      );
+    filtered.forEach(h => {
+      const isFav = favs.includes(h.id);
+      const favClass = isFav ? 'active' : '';
 
-      resultCount.textContent = `🔎 ${filtered.length} 件の物件が見つかりました`;
-      resultsDiv.innerHTML = '';
+      const propertyHTML = document.createElement("div");
+      propertyHTML.className = "property";
+      propertyHTML.innerHTML = `
+        <h2>${h.area}｜${h.layout}｜${h.price}万円
+          <button class="favorite-btn ${favClass}" data-id="${h.id}">❤️</button>
+        </h2>
+        <img src="${h.image}" alt="物件画像">
+        <p>🏠 築年数：${h.age}年</p>
+        <p>📋 詳細：${h.detail}</p>
+        <p>🎯 使用目的：${h.usage}</p>
+        <p>🔧 設備条件：${h.features.join(", ")}</p>
+        <a href="detail.html?id=${h.id}" class="btn">📩 お問い合わせ</a>
+      `;
 
-      filtered.forEach(h => {
-        const isFav = favs.includes(h.id);
-        resultsDiv.innerHTML += `
-          <div class="property">
-            <h2>${h.area}｜${h.layout}｜${h.price}万円
-              <button class="favorite-btn ${isFav ? 'active' : ''}" onclick="toggleFavorite(${h.id})">❤️</button>
-            </h2>
-            <img src="${h.image}" alt="物件画像">
-            <p>🏠 築年数：${h.age}年</p>
-            <p>📋 詳細：${h.detail}</p>
-            <p>🎯 使用目的：${h.usage}</p>
-            <p>🔧 設備条件：${h.features.join(", ")}</p>
-            <a href="detail.html?id=${h.id}" class="btn">📩 お問い合わせ</a>
-          </div>
-        `;
-      });
-    }
-
-    areaFilter.addEventListener('change', renderProperties);
-    priceFilter.addEventListener('input', () => {
-      priceValue.textContent = priceFilter.value;
-      renderProperties();
+      resultsDiv.appendChild(propertyHTML);
     });
 
-    // 初期表示
+    // ボタンクリックイベントを再登録
+    document.querySelectorAll(".favorite-btn").forEach(btn => {
+      btn.addEventListener("click", e => {
+        const id = Number(e.target.getAttribute("data-id"));
+        toggleFavorite(id);
+      });
+    });
+  }
+
+  areaFilter.addEventListener('change', renderProperties);
+  priceFilter.addEventListener('input', () => {
     priceValue.textContent = priceFilter.value;
     renderProperties();
-  </script>
+  });
+
+  // 初期表示
+  priceValue.textContent = priceFilter.value;
+  renderProperties();
+</script>
+
 
 </body>
 </html>
