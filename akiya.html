@@ -22,12 +22,6 @@
       margin-bottom: 30px;
     }
 
-    h2 {
-      font-size: 24px;
-      color: #0A4DA2;
-      margin-bottom: 15px;
-    }
-
     .filter {
       background: #eef2f7;
       padding: 20px;
@@ -44,7 +38,6 @@
 
     select, input[type="range"] {
       width: 100%;
-      margin-top: 5px;
       font-size: 16px;
     }
 
@@ -57,7 +50,6 @@
       font-size: 20px;
       font-weight: bold;
       margin-bottom: 20px;
-      color: #333;
     }
 
     .property {
@@ -83,13 +75,7 @@
       border-radius: 8px;
     }
 
-    .property p {
-      margin: 5px 0;
-      font-size: 16px;
-    }
-
     .btn {
-      display: inline-block;
       background-color: #0A4DA2;
       color: white;
       padding: 10px 16px;
@@ -97,7 +83,7 @@
       text-decoration: none;
       font-size: 16px;
       margin-top: 10px;
-      transition: background-color 0.3s ease;
+      display: inline-block;
     }
 
     .btn:hover {
@@ -105,42 +91,39 @@
     }
 
     .favorite-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 32px;
-  color: #bbb;          /* ここをグレーに */
-  margin-left: 10px;
-  vertical-align: middle;
-  padding: 8px;
-  border-radius: 50%;
-  transition: color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  user-select: none;
-}
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 32px;
+      color: #bbb;
+      margin-left: 10px;
+      vertical-align: middle;
+      padding: 8px;
+      border-radius: 50%;
+      transition: color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+    }
 
-.favorite-btn:hover {
-  color: #ff6b81;
-  box-shadow: 0 0 8px #ff6b81;
-  transform: scale(1.1);
-}
+    .favorite-btn:hover {
+      color: #ff6b81;
+      box-shadow: 0 0 8px #ff6b81;
+      transform: scale(1.1);
+    }
 
-.favorite-btn.active {
-  color: #ff6b81;  /* ピンクに */
-  text-shadow: 0 0 5px #ff6b81;
-  animation: bounce 0.3s ease;
-}
+    .favorite-btn.active {
+      color: #ff6b81;
+      text-shadow: 0 0 5px #ff6b81;
+      animation: bounce 0.3s ease;
+    }
 
-
-/* クリック時の弾むアニメーション */
-@keyframes bounce {
-  0%   { transform: scale(1); }
-  50%  { transform: scale(1.3); }
-  100% { transform: scale(1); }
-}
-
+    @keyframes bounce {
+      0%   { transform: scale(1); }
+      50%  { transform: scale(1.3); }
+      100% { transform: scale(1); }
+    }
   </style>
 </head>
 <body>
@@ -215,33 +198,28 @@
       resultCount.textContent = `🔎 ${filtered.length} 件の物件が見つかりました`;
       resultsDiv.innerHTML = '';
 
-       filtered.forEach(h => {
-    const isFav = favs.includes(h.id);
-    const favClass = isFav ? 'active' : '';  // ここでactiveクラス付ける
+      filtered.forEach(h => {
+        const isFav = favs.includes(h.id);
+        const favClass = isFav ? 'active' : '';
 
-    resultsDiv.innerHTML += `
-      <div class="property">
-        <h2>${h.area}｜${h.layout}｜${h.price}万円
-          <button class="favorite-btn ${favClass}" data-id="${h.id}" aria-label="お気に入り登録ボタン">❤️</button>
-        </h2>
-        <!-- 以下省略 -->
-      </div>
-    `;
-  });
+        resultsDiv.innerHTML += `
+          <div class="property">
+            <h2>${h.area}｜${h.layout}｜${h.price}万円
+              <button class="favorite-btn ${favClass}" data-id="${h.id}" aria-label="お気に入り">❤️</button>
+            </h2>
+            <img src="${h.image}" alt="物件画像">
+            <p>🏠 築年数：${h.age}年</p>
+            <p>📋 詳細：${h.detail}</p>
+            <p>🎯 使用目的：${h.usage}</p>
+            <p>🔧 設備条件：${h.features.join(", ")}</p>
+            <a href="detail.html?id=${h.id}" class="btn">📩 お問い合わせ</a>
+          </div>
+        `;
+      });
 
-  // イベントリスナー付与
-  document.querySelectorAll('.favorite-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const id = Number(btn.dataset.id);
-      toggleFavorite(id);
-    });
-  });
-}
-
-      // ボタンイベント再登録
-      document.querySelectorAll(".favorite-btn").forEach(btn => {
-        btn.addEventListener("click", e => {
-          const id = Number(e.target.getAttribute("data-id"));
+      document.querySelectorAll('.favorite-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = Number(btn.dataset.id);
           toggleFavorite(id);
         });
       });
@@ -253,7 +231,6 @@
       renderProperties();
     });
 
-    // 初期表示
     priceValue.textContent = priceFilter.value;
     renderProperties();
   </script>
