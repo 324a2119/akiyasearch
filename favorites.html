@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>お気に入り一覧</title>
   <style>
     body {
@@ -22,6 +22,7 @@
       margin-bottom: 20px;
     }
 
+    /* aタグもbuttonも.btnクラスで統一デザイン */
     .btn {
       background-color: #0A4DA2;
       color: white;
@@ -31,11 +32,25 @@
       font-size: 16px;
       margin: 10px 5px;
       display: inline-block;
+      cursor: pointer;
+
+      /* 影とアウトラインを消す */
+      box-shadow: none !important;
+      outline: none !important;
+      border: none;
+      user-select: none;
     }
 
-    .btn {
-  box-shadow: none !important;
-}
+    /* フォーカス時の青い枠を消す */
+    .btn:focus {
+      outline: none !important;
+      box-shadow: none !important;
+    }
+
+    /* ホバー時の色変化 */
+    .btn:hover {
+      background-color: #083B80;
+    }
 
     .property {
       background: #fff;
@@ -72,6 +87,8 @@
       padding: 6px 10px;
       cursor: pointer;
       font-size: 14px;
+      box-shadow: none !important;
+      outline: none !important;
     }
 
     .delete-btn:hover {
@@ -84,10 +101,9 @@
   <h1>❤ お気に入り物件一覧</h1>
 
   <div style="text-align: center; margin-bottom: 20px;">
-  <a href="akiya.html" class="btn">← トップに戻る</a>
-  <button class="btn" onclick="clearAllFavorites()">🗑 全て削除</button>
-</div>
-
+    <a href="akiya.html" class="btn">← トップに戻る</a>
+    <button class="btn" onclick="clearAllFavorites()">🗑 全て削除</button>
+  </div>
 
   <div id="favoritesList"></div>
 
