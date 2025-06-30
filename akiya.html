@@ -177,7 +177,7 @@
     const priceValue = document.getElementById('priceValue');
 
     function getFavorites() {
-      return JSON.parse(localStorage.getItem("favorites") || "[]");
+      return (JSON.parse(localStorage.getItem("favorites") || "[]")).map(Number);
     }
 
     function setFavorites(favs) {
