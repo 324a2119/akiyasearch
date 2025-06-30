@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>お気に入り一覧</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #fafafa;
+      color: #333;
+      margin: 20px auto;
+      max-width: 900px;
+      padding: 0 20px;
+      font-size: 18px;
+      line-height: 1.7;
+    }
+
+    h1 {
+      font-size: 32px;
+      color: #0A4DA2;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .property {
+      background: #fff;
+      border: 1px solid #ddd;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .property h2 {
+      font-size: 22px;
+      margin-bottom: 10px;
+      color: #0A4DA2;
+    }
+
+    .property img {
+      display: block;
+      margin: 10px auto 20px;
+      max-width: 90%;
+      height: auto;
+      border-radius: 8px;
+    }
+
+    .btn {
+      background-color: #0A4DA2;
+      color: white;
+      padding: 10px 16px;
+      border-radius: 5px;
+      text-decoration: none;
+      font-size: 16px;
+      margin-top: 10px;
+      display: inline-block;
+    }
+
+    .btn:hover {
+      background-color: #083B80;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>❤ お気に入り物件一覧</h1>
+  <div id="favoritesList"></div>
+  <div style="text-align: center;">
+    <a href="index.html" class="btn">← トップに戻る</a>
+  </div>
+
+  <script>
+    const allHouses = [
+      { id: 1, area: "富山県富山市", price: 500, layout: "3LDK", age: 30, detail: "駅から徒歩10分の広々とした物件", usage: "居住用", features: ["駐車場あり", "庭付き"], image: "空き家１.jpg" },
+      { id: 2, area: "石川県金沢市", price: 300, layout: "2DK", age: 40, detail: "静かな住宅街にある中古物件", usage: "別荘", features: ["オール電化"], image: "空き家フォルダ/空き家2.jpg" },
+      { id: 3, area: "富山県高岡市", price: 200, layout: "4LDK", age: 50, detail: "リフォーム済み。大家族向け", usage: "店舗", features: ["駐車場あり"], image: "空き家フォルダ/空き家3.jpg" },
+      { id: 4, area: "富山県富山市", price: 250, layout: "2DK", age: 20, detail: "小学校が目の前にある中古物件", usage: "家", features: ["オール電化"], image: "空き家フォルダ/空き家４.jpg" },
+      { id: 5, area: "富山県高岡市", price: 780, layout: "1DK", age: 35, detail: "リノベーション済み！商店街近くのコンパクトアパート", usage: "居住用", features: ["駐車場あり", "オール電化"], image: "空き家フォルダ/空き家5.jpg" },
+      { id: 6, area: "富山県南砺市", price: 950, layout: "5K", age: 65, detail: "自然豊かな場所にある広々とした土地付き古民家", usage: "居住用", features: ["庭付き"], image: "空き家フォルダ/空き家6.jpg" },
+      { id: 7, area: "富山県射水市", price: 620, layout: "3DK", age: 40, detail: "小学校隣接！子育て家族向け中古戸建", usage: "居住用", features: ["駐車場あり", "庭付き"], image: "空き家フォルダ/空き家7.jpg" },
+      { id: 8, area: "富山県富山市", price: 450, layout: "1R", age: 25, detail: "駅徒歩圏内！投資用にも最適なワンルームマンション", usage: "居住用", features: ["駐車場あり"], image: "空き家フォルダ/空き家8.jpg" },
+      { id: 9, area: "富山県砺波市", price: 380, layout: "4DK", age: 55, detail: "DIY向き！郊外の趣のある一戸建て", usage: "居住用", features: ["駐車場あり", "庭付き", "オール電化"], image: "空き家フォルダ/空き家9.jpg" }
+    ];
+
+    function getFavorites() {
+      return JSON.parse(localStorage.getItem("favorites") || "[]");
+    }
+
+    function renderFavorites() {
+      const favs = getFavorites();
+      const favoritesDiv = document.getElementById("favoritesList");
+
+      const favHouses = allHouses.filter(h => favs.includes(h.id));
+
+      if (favHouses.length === 0) {
+        favoritesDiv.innerHTML = "<p>お気に入りの物件がまだありません。</p>";
+        return;
+      }
+
+      favHouses.forEach(h => {
+        favoritesDiv.innerHTML += `
+          <div class="property">
+            <h2>${h.area}｜${h.layout}｜${h.price}万円</h2>
+            <img src="${h.image}" alt="物件画像">
+            <p>🏠 築年数：${h.age}年</p>
+            <p>📋 詳細：${h.detail}</p>
+            <p>🎯 使用目的：${h.usage}</p>
+            <p>🔧 設備条件：${h.features.join(", ")}</p>
+            <a href="detail.html?id=${h.id}" class="btn">📩 お問い合わせ</a>
+          </div>
+        `;
+      });
+    }
+
+    renderFavorites();
+  </script>
+</body>
+</html>
