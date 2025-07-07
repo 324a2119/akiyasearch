@@ -46,7 +46,20 @@
 </div>
 
 <a href="akiya.html" class="btn-back">← 戻る</a>
-<a href="" class="otoiawase">✉️ 問い合わせ</a>
+<a href="mailto:example@example.com?subject=物件についてのお問い合わせ&id=${property?.id}" class="otoiawase">✉️ 問い合わせ</a>
+
+<style>
+  .otoiawase {
+    display: inline-block;
+    margin-top: 20px;
+    background-color: #28a745;
+    color: white;
+    padding: 10px 16px;
+    border-radius: 5px;
+    text-decoration: none;
+    margin-left: 20px;
+  }
+</style>
 
 
 <script>
