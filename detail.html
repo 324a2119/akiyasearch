@@ -115,6 +115,7 @@
   const detailDiv = document.getElementById('propertyDetail');
 
   const property = houses.find(h => h.id === id);
+  const inquiryBtn = document.querySelector('.otoiawase');
 
   if (property) {
     detailDiv.innerHTML = `
@@ -125,6 +126,16 @@
       <p>🎯 使用目的：${property.usage}</p>
       <p>🔧 設備条件：${property.features.join(", ")}</p>
     `;
+
+    // 問い合わせメールリンクを動的に作成
+    const mailBody = `以下の物件について問い合わせします。%0D%0A%0D%0A` +
+                     `エリア: ${property.area}%0D%0A` +
+                     `間取り: ${property.layout}%0D%0A` +
+                     `価格: ${property.price}万円%0D%0A` +
+                     `築年数: ${property.age}年%0D%0A` +
+                     `詳細: ${property.detail}`;
+
+    inquiryBtn.href = `mailto:example@example.com?subject=物件ID${property.id}についてのお問い合わせ&body=${mailBody}`;
   } else {
     detailDiv.textContent = "物件が見つかりませんでした。";
   }
