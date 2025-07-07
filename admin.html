@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>管理者画面 - 空き家さーち</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 0 20px;
+      background: #f4f4f4;
+    }
+    h1 {
+      text-align: center;
+      color: #0A4DA2;
+    }
+    form {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+    }
+    label {
+      display: block;
+      margin: 10px 0 5px;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 8px;
+      font-size: 16px;
+    }
+    button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      background: #0A4DA2;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 12px;
+      text-align: center;
+    }
+    tr:nth-child(even) {
+      background: #f9f9f9;
+    }
+    .delete-btn {
+      color: white;
+      background: #d9534f;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<h1>管理者画面 - 空き家さーち</h1>
+
+<form id="addForm">
+  <h2>物件を追加</h2>
+  <label>エリア: <input type="text" id="area" required></label>
+  <label>価格（万円）: <input type="number" id="price" required></label>
+  <label>間取り: <input type="text" id="layout" required></label>
+  <label>築年数: <input type="number" id="age" required></label>
+  <label>詳細: <textarea id="detail" required></textarea></label>
+  <label>使用目的: <input type="text" id="usage" required></label>
+  <label>設備条件（カンマ区切り）: <input type="text" id="features" required></label>
+  <label>画像ファイル名: <input type="text" id="image" required></label>
+  <button type="submit">追加</button>
+</form>
+
+<h2>登録済み物件一覧</h2>
+<table id="houseTable">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>エリア</th>
+      <th>価格</th>
+      <th>間取り</th>
+      <th>削除</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<script>
+  function getHouses() {
+    return JSON.parse(localStorage.getItem("houses") || "[]");
+  }
+
+  function setHouses(houses) {
+    localStorage.setItem("houses", JSON.stringify(houses));
+  }
+
+  function renderTable() {
+    const tbody = document.querySelector("#houseTable tbody");
+    tbody.innerHTML = "";
+
+    getHouses().forEach(h => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${h.id}</td>
+        <td>${h.area}</td>
+        <td>${h.price}万円</td>
+        <td>${h.layout}</td>
+        <td><button class="delete-btn" onclick="deleteHouse(${h.id})">削除</button></td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function deleteHouse(id) {
+    if (confirm("本当に削除しますか？")) {
+      const houses = getHouses().filter(h => h.id !== id);
+      setHouses(houses);
+      renderTable();
+    }
+  }
+
+  document.getElementById("addForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+    const newHouse = {
+      id: Date.now(),
+      area: area.value,
+      price: parseInt(price.value),
+      layout: layout.value,
+      age: parseInt(age.value),
+      detail: detail.value,
+      usage: usage.value,
+      features: features.value.split(',').map(f => f.trim()),
+      image: image.value
+    };
+
+    const houses = getHouses();
+    houses.push(newHouse);
+    setHouses(houses);
+    this.reset();
+    renderTable();
+  });
+
+  renderTable();
+</script>
+
+</body>
+</html>
