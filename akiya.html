@@ -176,6 +176,8 @@
     const areaFilter = document.getElementById('areaFilter');
     const priceFilter = document.getElementById('priceFilter');
     const priceValue = document.getElementById('priceValue');
+    const houses = JSON.parse(localStorage.getItem("houses") || "[]");
+
 
     function getFavorites() {
       return (JSON.parse(localStorage.getItem("favorites") || "[]")).map(Number);
